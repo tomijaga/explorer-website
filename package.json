@@ -1,5 +1,5 @@
 {
-  "name": "website",
+  "name": "tnb-explorer",
   "version": "0.1.0",
   "private": false,
   "dependencies": {
@@ -110,5 +110,7 @@
     "transformIgnorePatterns": [
       "node_modules/(?!react-syntax-highlighter)/"
     ]
-  }
+  },
+  "keywords": [],
+  "description": ""
 }

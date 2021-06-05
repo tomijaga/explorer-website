@@ -360,15 +360,15 @@ const PaymentRequest = () => {
                 {isMakingPayment ? 'Detailed view of payments' : 'Set up and share payment request'}
               </Typography.Title>
 
-              <Form form={form} component={false}>
-                <Modal
-                  title="Basic Modal"
-                  centered
-                  visible={showEditModal}
-                  okText="Save"
-                  onOk={() => save(editingKey)}
-                  onCancel={cancel}
-                >
+              <Modal
+                title="New Payment"
+                centered
+                visible={showEditModal}
+                okText="Save"
+                onOk={() => save(editingKey)}
+                onCancel={cancel}
+              >
+                <Form form={form} layout="vertical">
                   <Form.Item
                     name={'accountNumber'}
                     label="Recipient Address"
@@ -396,7 +396,9 @@ const PaymentRequest = () => {
                   >
                     <Input />
                   </Form.Item>
-                </Modal>
+                </Form>
+              </Modal>
+              <Form form={form}>
                 <Table
                   components={{
                     body: {
