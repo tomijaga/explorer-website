@@ -419,7 +419,6 @@ const PaymentRequest = () => {
                   columns={mergedColumns}
                   rowClassName="editable-row"
                   pagination={false}
-                  scroll={{x: 600}}
                   footer={() => (
                     <Row justify="space-between">
                       <Col>

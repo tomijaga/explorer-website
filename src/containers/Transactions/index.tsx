@@ -4,18 +4,18 @@ import Row from 'antd/es/row';
 import Radio from 'antd/es/radio';
 import Table, {TablePaginationConfig} from 'antd/es/table';
 import Typography from 'antd/es/typography';
-
 import {Link} from 'react-router-dom';
+import {useSelector} from 'react-redux';
 
 import {getTransactions} from 'api/bank';
 import {FeeSummary, NetworkStats, PageContentsLayout, TestnetAlertMessage} from 'components';
-import {BANK_URL} from 'constants/url';
 import {blocksColumn} from 'data/tableData/blocks';
 import {useChainPath, useTransactionColumn} from 'hooks';
+import {getCurrentChain} from 'selectors';
 
 const Transactions: FC<{section: 'transactions' | 'blocks'}> = ({section}) => {
+  const {isMainnet, bankUrl} = useSelector(getCurrentChain);
   const currentPath = useChainPath();
-  const isMainnet = currentPath === '/tnb';
 
   const transactionColumn = useTransactionColumn();
   const [transactionData, setTransactionData] = useState<any[]>([]);
@@ -39,7 +39,7 @@ const Transactions: FC<{section: 'transactions' | 'blocks'}> = ({section}) => {
       const offset = pageDetails.current ? (pageDetails.current - 1) * limit : 0;
 
       if (section === 'transactions') {
-        getTransactions(BANK_URL, {limit, offset}).then(([txs, totalTxs]) => {
+        getTransactions(bankUrl, {limit, offset}).then(([txs, totalTxs]) => {
           setTransactionData(txs);
           const pageSize = limit;
           const currentPage = offset / limit + 1;
@@ -61,13 +61,11 @@ const Transactions: FC<{section: 'transactions' | 'blocks'}> = ({section}) => {
 
   useEffect(() => {
     const load = () => {
-      if (isMainnet) {
-        handleTableChange(initialPagination);
-      }
+      handleTableChange(initialPagination);
     };
 
     load();
-  }, [isMainnet, handleTableChange, initialPagination]);
+  }, [handleTableChange, initialPagination]);
 
   return (
     <PageContentsLayout>
@@ -94,7 +92,14 @@ const Transactions: FC<{section: 'transactions' | 'blocks'}> = ({section}) => {
         </Radio.Group>
       </Col>
 
-      <Col sm={24} md={16} xl={17}>
+      <Col
+        sm={24}
+        md={16}
+        xl={17}
+        style={{
+          overflowX: 'hidden',
+        }}
+      >
         {section === 'transactions' ? (
           <Table
             bordered
@@ -102,8 +107,7 @@ const Transactions: FC<{section: 'transactions' | 'blocks'}> = ({section}) => {
             dataSource={transactionData}
             onChange={handleTableChange}
             pagination={transactionPagination}
-            scroll={{x: 700}}
-            sticky
+            style={{overflowX: 'auto'}}
             title={() => (
               <Row justify="space-between" align="middle">
                 <Typography.Text> Latest Transactions</Typography.Text>
@@ -121,8 +125,6 @@ const Transactions: FC<{section: 'transactions' | 'blocks'}> = ({section}) => {
             dataSource={[]}
             onChange={handleTableChange}
             pagination={blockPagination}
-            scroll={{x: 700}}
-            sticky
             title={() => (
               <Row justify="space-between" align="middle">
                 <Typography.Text> Latest Blocks</Typography.Text>

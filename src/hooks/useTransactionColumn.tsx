@@ -21,7 +21,7 @@ export const useTransactionColumn = (accountNumber?: string): ColumnsType<any> =
       return text;
     }
     return (
-      <Link to={`${currentPath}/account/${text}/`} style={{wordBreak: 'break-all', wordWrap: 'break-word'}}>
+      <Link to={`${currentPath}/account/${text}/`} style={{wordBreak: 'break-word', wordWrap: 'break-word'}}>
         {text}
       </Link>
     );

@@ -5,10 +5,11 @@ import {CORS_BRIDGE} from 'constants/url';
 const getData = async (url: string) => (await axios.get(`${CORS_BRIDGE}/${url}`)).data;
 
 interface BanksColumnType {
-  confirmationBlocks: number;
+  confirmations: number;
   fee: number;
   networkId: string;
   ipAddress: string;
+  transactions: number;
 }
 
 export const getBanks = async (
@@ -19,18 +20,23 @@ export const getBanks = async (
   const rawBanks = (await getData(url)).results;
 
   const formattedBanks = rawBanks.map(
-    async ({protocol, ip_address, port, node_identifier, default_transaction_fee}: any): Promise<BanksColumnType> => {
+    async ({protocol, ip_address, port, node_identifier}: any): Promise<BanksColumnType> => {
       const bankIp = protocol.concat('://', ip_address, ':', port ? port.toString() : '');
 
-      console.log({bankIp});
+      const {data: confirmation}: any = await axios.get(`${CORS_BRIDGE}/${bankIp}/confirmation_blocks?limit=1`);
 
-      const [unusedObj, totalConfirmations] = await getConfirmationBlocks(bankIp);
+      const {data: txs}: any = await axios.get(`${CORS_BRIDGE}/${bankIp}/bank_transactions?limit=1`);
+
+      const {data: config}: any = await axios.get(`${CORS_BRIDGE}/${bankIp}/config`);
+
+      console.log({confirmation, txs, config});
 
       return {
-        confirmationBlocks: totalConfirmations as number,
-        fee: default_transaction_fee as number,
+        confirmations: confirmation.count as number,
+        fee: config.default_transaction_fee as number,
         networkId: node_identifier,
         ipAddress: ip_address,
+        transactions: txs.count as number,
       };
     },
   );
